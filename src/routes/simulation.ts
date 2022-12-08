@@ -1,7 +1,7 @@
 import * as  d3 from 'd3';
 import type { Graph } from './types';
 
-type SimulationCallback = (data: any) => {};
+type SimulationCallback = (event: any) => void;
 
 const RunSimulation = (
     graph: Graph, 

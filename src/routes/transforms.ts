@@ -15,16 +15,25 @@ const transformDataToGraph = (data: DbcData) => {
             id: globalIdx,
             name: messageName,
             type: 'message',
-            radius: 10});
+            radius: 10,
+            messageIdx: null,
+            nodeIdx: null,
+            signalIdx: null,
+            obj: null
+        });
         let messageLink = globalIdx;
         message.signals.forEach((signal,signalName)=>{
             globalIdx++;
             graph.nodes.push({
                 id: globalIdx,
-                message: messageLink,
                 name: signalName,
                 type: 'signal',
-                radius: 5});
+                radius: 5,
+                messageIdx: messageLink,
+                nodeIdx: null,
+                signalIdx: null,
+                obj: null
+            });
             graph.links.push({source: messageLink, target:globalIdx})
         })
     });

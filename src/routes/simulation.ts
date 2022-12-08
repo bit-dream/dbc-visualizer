@@ -1,5 +1,6 @@
 import * as  d3 from 'd3';
 import type { Graph } from './types';
+import _ from 'lodash'
 
 type SimulationCallback = (event: any) => void;
 
@@ -28,6 +29,8 @@ const RunSimulation = (
         
         function dragended(event: any) {
           if (!event.active) simulation.alphaTarget(0);
+          //event.fx = d3.event.x;
+          //event.fy = d3.event.y;
           event.subject.fx = null;
           event.subject.fy = null;
         }
@@ -97,6 +100,13 @@ const RunSimulation = (
         .force('collision', d3.forceCollide().radius((d:any) => d.radius))
         .force('link', d3.forceLink().links(graph.links))
         .on('tick', ticked);
+    return simulation;
 };
+
+export const simulationResize = (width: number, height: number) => {
+
+  d3.select('simulationContainer')
+    .attr("viewBox", `0 0 ${width} ${height}`)
+}
 
 export default RunSimulation;

@@ -89,10 +89,14 @@
                 {source: 1, target: 6},
             ]
         };
-        RunSimulation(newData, (message) => {message.preventDefault(); console.log('hello')}, '#test');
+        RunSimulation(
+            newData, 
+            (message) => {alert(message)}, 
+            '#test',
+            window.innerWidth,
+            window.innerHeight);
     })
 
 </script>
 
-<div id="test" style="width: 100vw; height:100vh;">
-</div>
+<div id="test" style="height: 100vh; width: 100vw; display: block;"></div>

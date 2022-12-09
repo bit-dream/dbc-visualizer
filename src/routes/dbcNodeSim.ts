@@ -21,8 +21,10 @@ class Simulation {
     };
 
     // Class properties
+    svgId = 'simulationContainer';
     forceSimulation: any;
     mainContainer: any;
+    zoom: any;
 
     constructor(selector: string, graph: Graph, callback=(d: any)=>{}) {
         this.selector = selector;
@@ -111,6 +113,14 @@ class Simulation {
                 .style('position', 'absolute')
                 .style('top', '10px')
                 .style('left', '0')
+                .call(d3.zoom().on("zoom", (event: any, d: any) => {
+                    this.mainContainer.attr("transform", event.transform);
+                  }))
+                .append("g");
+    }
+
+    getRootSvg() {
+        return d3.select(this.svgId);
     }
 
     drag(simulation: any) {    

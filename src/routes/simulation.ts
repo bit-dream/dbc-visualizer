@@ -12,6 +12,8 @@ const RunSimulation = (
     height: number
   ) => {
 
+    let min_zoom = 0.1;
+    let max_zoom = 7;
     let chargeStrength= -20;
     let centeringStrength = 0.1;
 
@@ -90,6 +92,8 @@ const RunSimulation = (
         updateLinks();
         updateNodes();
     }
+
+    var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 
     let simulation: any = d3.forceSimulation(graph.nodes, graph.links)
         .force('charge', d3.forceManyBody().strength(chargeStrength))

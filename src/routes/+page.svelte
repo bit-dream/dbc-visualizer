@@ -1,40 +1,40 @@
 <script type="ts">
-	import { onMount } from 'svelte';
-    import RunSimulation, { simulationResize } from './simulation';
-    import transformDataToGraph from './transforms';
-    import _ from 'lodash'
-    import Dialog, { Title, Content, Actions } from '@smui/dialog';
-    import Button, { Label } from '@smui/button';
-	import type { DbcData } from 'dbc-can/lib/dbc/types';
- 
-  let open = false;
-  let clicked = 'Nothing yet.';
-  let title = '';
-  let dialog = '';
+import { onMount } from 'svelte';
+import Simulation from './dbcNodeSim';
+import transformDataToGraph from './transforms';
+import _ from 'lodash'
+import Dialog, { Title, Content, Actions } from '@smui/dialog';
+import Button, { Label } from '@smui/button';
+import type { DbcData } from 'dbc-can/lib/dbc/types';
 
-    /** @type {import('./$types').PageData} */  export let data: DbcData;
-    let graph = transformDataToGraph(data);
+let open = false;
+let clicked = 'Nothing yet.';
+let title = '';
+let dialog = '';
 
-    onMount(() => {
-        const sim = RunSimulation(
-            graph, 
-            (e) => {
-                open = true;
-                title = e;
-                const msg = data.messages.get(title);
-                if (msg) {
-                    dialog = `
-                        ${msg.name}
-                        ${msg.description}
-                        ${msg.signals}
-                    `
-                }
-            }, 
-            '#test',
-            window.innerWidth,
-            window.innerHeight
-        );
-    })
+const nodeClickHandler = (e: any) => {
+    open = true;
+    title = e;
+    const msg = data.messages.get(title);
+    if (msg) {
+        dialog = `
+            ${msg.name}
+            ${msg.description}
+            ${msg.signals}
+        `
+    }
+}
+
+/** @type {import('./$types').PageData} */  export let data: DbcData;
+let graph = transformDataToGraph(data);
+const sim = new Simulation('#test', graph);
+
+onMount(() => {
+
+    sim.setWidth = window.innerWidth;
+    sim.setHeight = window.innerHeight;
+    sim.init();
+})
 
 </script>
 

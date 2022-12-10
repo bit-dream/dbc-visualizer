@@ -3,7 +3,8 @@ import type { Graph } from './types';
 import _ from 'lodash'
 import type { init } from 'svelte/internal';
 import networkSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/network-tree-svgrepo-com.svg'
-import messageSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/message-svgrepo-com.png'
+import messageSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/mail-svgrepo-com.svg'
+import signalSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/letter-s-svgrepo-com.svg'
 
 type SimulationCallback = (event: any) => void;
 
@@ -18,8 +19,8 @@ class Simulation {
     settings = {
         minZoom: 0.1,
         maxZoom: 7,
-        chargeStrength: -1000,
-        centeringStrength: 0.1,
+        chargeStrength: -500,
+        centeringStrength: 0.01,
         baseRadius: 20,
         linkLength: 200
     };
@@ -65,7 +66,7 @@ class Simulation {
                 .force("y", d3.forceY(this.height / 2)
                     .strength(this.settings.centeringStrength))
                 .force('collision', d3.forceCollide()
-                    .radius((d:any) => d.radius))
+                    .radius((d:any) => {return this.computeRadius(d)}))
                 .force('link', d3.forceLink()
                     .links(this.graph.links).distance(this.settings.linkLength))
                 .on('tick', this.simulationRunningCallback);
@@ -89,7 +90,7 @@ class Simulation {
             //})
 
         let circle = group.append("circle")
-            .attr("r", (d:any) => this.settings.baseRadius + d.radius)
+            .attr("r", (d:any) => {return this.computeRadius(d)})
             .attr('fill', '#fff')
             .attr('stroke', '#000');
         
@@ -102,6 +103,8 @@ class Simulation {
                 if (d.type === 'message') {
                     return messageSvg
                 } else if (d.type === 'signal') {
+                    return signalSvg
+                } else if (d.type === 'network') {
                     return networkSvg
                 }
             })
@@ -109,22 +112,46 @@ class Simulation {
         let text = group.append('text')
             .attr('text-anchor', 'middle')
             .attr('y', '45px')
-            .text((d:any)=>d.name)
+            .text((d:any)=> (d.type === 'message' || d.type === 'network' || d.type === 'signal') ? d.name : '')
         
         group.call(this.drag(this.forceSimulation));
     };
+
+    computeRadius(d: any) {
+        if (d.type === 'message') {
+            return this.settings.baseRadius + 10
+        } else if (d.type === 'signal') {
+            return this.settings.baseRadius
+        } else {
+            return this.settings.baseRadius + 20;
+        }
+    }
     
     updateLinks = () => {
         let u = this.mainContainer
             .selectAll('line')
             .data(this.graph.links)
             .join('line')
+            .attr('class','line')
             .attr('x1', (d:any) => d.source.x)
             .attr('y1', (d:any) => d.source.y)
             .attr('x2', (d:any) => d.target.x)
             .attr('y2', (d:any) => d.target.y)
             .attr('style','stroke: #ccc;')
+
+        this.getRootSvg().selectAll(".line")
+            .data(this.graph.links)
+            .enter().append("text")
+            .attr("class","labelText")
+            .attr("dx",20)
+            .attr("dy",0)
+            .style("fill","red")
+            .append("textPath")
+            .text('hello');
+    
     }
+
+
 
     simulationRunningCallback = () => {
         this.updateLinks();

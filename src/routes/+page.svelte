@@ -1,7 +1,7 @@
 <script type="ts">
 import { onMount } from 'svelte';
 import Simulation from './dbcNodeSim';
-import transformDataToGraph from './transforms';
+import {createGraph} from './transforms';
 import _ from 'lodash'
 import type { DbcData } from 'dbc-can/lib/dbc/types';
 
@@ -24,9 +24,8 @@ const nodeClickHandler = (e: any) => {
 }
 
 /** @type {import('./$types').PageData} */  export let data: DbcData;
-let graph = transformDataToGraph(data);
+let graph = createGraph(data);
 const sim = new Simulation('#test', graph);
-
 onMount(() => {
 
     sim.setWidth = window.innerWidth;

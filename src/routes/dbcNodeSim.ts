@@ -181,6 +181,21 @@ class Simulation {
             .on("drag", dragged)
             .on("end", dragended)
     }
+
+    documentResizeHandler(document: any) {
+        addEventListener("resize", _.debounce(
+            () => {
+                this.forceSimulation.stop();
+                d3.select(this.selector).html("");
+                this.setWidth = document.innerWidth;
+                this.setHeight = document.innerHeight;
+                this.createMainContainer();
+                this.updateLinks();
+                this.updateNodes();
+                this.forceSimulation.restart();
+            }, 10)
+        );
+    }
     
 }
 

@@ -32,6 +32,7 @@ onMount(() => {
     sim.setWidth = window.innerWidth;
     sim.setHeight = window.innerHeight;
     sim.init();
+    sim.documentResizeHandler(document);
 })
 
 

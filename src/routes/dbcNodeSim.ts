@@ -18,7 +18,7 @@ class Simulation {
     settings = {
         minZoom: 0.1,
         maxZoom: 7,
-        chargeStrength: -300,
+        chargeStrength: -1000,
         centeringStrength: 0.1,
         baseRadius: 20,
         linkLength: 200
@@ -71,28 +71,6 @@ class Simulation {
                 .on('tick', this.simulationRunningCallback);
     }
 
-    updateNodes2 = () => {
-        let group = this.mainContainer
-            .selectAll("g")
-            .attr("transform", function(d: any) {
-                return "translate(" + d.x + "," + d.y + ")";
-            })
-            .data(this.graph.nodes)
-            .enter().append("g")
-            .on("dblclick", (d:any) => {this.onClickCallback(d.target.id)})
-            .on("click", (event:any, d:any) => {
-                d.fx = null;
-                d.fy = null;})
-            //.on("mouseover", (d) => {
-            //  console.log(`Moused over node ${d.target.id}`)
-            //})
-
-        let circle = group.append("circle")
-            .attr("r", (d:any) => d.radius)
-        
-        group.call(this.drag(this.forceSimulation));
-    };
-
     updateNodes = () => {
 
         let group = this.mainContainer
@@ -127,6 +105,11 @@ class Simulation {
                     return networkSvg
                 }
             })
+
+        let text = group.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', '45px')
+            .text((d:any)=>d.name)
         
         group.call(this.drag(this.forceSimulation));
     };
@@ -141,16 +124,6 @@ class Simulation {
             .attr('x2', (d:any) => d.target.x)
             .attr('y2', (d:any) => d.target.y)
             .attr('style','stroke: #ccc;')
-            
-        u.append('text')
-            .attr('class', 'text')
-            .attr('fill', '#000000')
-            .attr('font-size', '8px')
-            .attr('pointer-events', 'none')
-            .attr('text-anchor', 'middle')
-            .text(function(d: any) {
-                return 'test';
-            });
     }
 
     simulationRunningCallback = () => {

@@ -2,6 +2,7 @@ import * as  d3 from 'd3';
 import type { Graph } from './types';
 import _ from 'lodash'
 import type { init } from 'svelte/internal';
+import mySvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/network-tree-svgrepo-com.svg'
 
 type SimulationCallback = (event: any) => void;
 
@@ -16,7 +17,7 @@ class Simulation {
     settings = {
         minZoom: 0.1,
         maxZoom: 7,
-        chargeStrength: -20,
+        chargeStrength: -300,
         centeringStrength: 0.1,
     };
 
@@ -25,6 +26,9 @@ class Simulation {
     forceSimulation: any;
     mainContainer: any;
     zoom: any;
+    node: any
+
+    circles: any;
 
     constructor(selector: string, graph: Graph, callback=(d: any)=>{}) {
         this.selector = selector;
@@ -45,6 +49,7 @@ class Simulation {
     init() {
         this.createMainContainer();
         this.createForceSimulation();
+        console.log(mySvg)
     }
 
     createForceSimulation() {
@@ -64,19 +69,45 @@ class Simulation {
     }
 
     updateNodes = () => {
-        let u = this.mainContainer
-            .selectAll('circle')
+        let group = this.mainContainer
+            .selectAll("g")
+            .attr("transform", function(d: any) {
+                return "translate(" + d.x + "," + d.y + ")";
+            })
             .data(this.graph.nodes)
-            .join('circle')
-            .attr('r', (d:any) => d.radius)
-            .attr('cx', (d:any) => d.x)
-            .attr('cy', (d:any) => d.y)
-            .attr('id', (d:any) => d.name)
+            .enter().append("g")
             .on("dblclick", (d:any) => {this.onClickCallback(d.target.id)})
+            .on("click", (event:any, d:any) => {
+                d.fx = null;
+                d.fy = null;})
             //.on("mouseover", (d) => {
             //  console.log(`Moused over node ${d.target.id}`)
             //})
-            .call(this.drag(this.forceSimulation));
+
+        let circle = group.append("circle")
+            .attr("r", (d:any) => d.radius)
+        
+        /*
+        <svg width="48px" height="48px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" fill="white" fill-opacity="0.01"/>
+        <rect x="4" y="34" width="8" height="8" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="8" y="6" width="32" height="12" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M24 34V18" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 34V26H40V34" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="36" y="34" width="8" height="8" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="20" y="34" width="8" height="8" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M14 12H16" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        */
+        //group.append('rect').attr('width',48).attr('height',48).attr('fill','white').attr('fill-opacity',0.01)
+        //group.append('rect').attr('x',4).attr('y',34).attr('width',8).attr('height',8).attr('fill','#2F88FF').attr('stroke', 'black').attr('stroke-width', 4).attr('stroke-linecap','round').attr('stroke-linejoin','round')
+        //group.append("img").attr("src",'https://www.svgrepo.com/show/213625/handcuffs.svg')
+        
+        //group.append('text').text((d: any)=>d.name).attr('dy',20)
+            //.on("mouseover", (d) => {
+            //  console.log(`Moused over node ${d.target.id}`)
+            //})
+        group.call(this.drag(this.forceSimulation));
     };
     
     updateLinks = () => {
@@ -137,10 +168,12 @@ class Simulation {
         
         function dragended(event: any) {
             if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = event.x;
+            event.subject.fy = event.y
             //event.fx = d3.event.x;
             //event.fy = d3.event.y;
-            event.subject.fx = null;
-            event.subject.fy = null;
+            //event.subject.fx = null;
+            //event.subject.fy = null;
         }
         
         return d3.drag()

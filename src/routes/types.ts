@@ -19,4 +19,5 @@ export type GraphNodeProps = {
 export type GraphLinkProps = {
     source: number;
     target: number;
+    length: number;
 }

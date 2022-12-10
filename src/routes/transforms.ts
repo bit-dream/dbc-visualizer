@@ -28,13 +28,13 @@ const transformDataToGraph = (data: DbcData) => {
                 id: globalIdx,
                 name: signalName,
                 type: 'signal',
-                radius: 5,
+                radius: 10,
                 messageIdx: messageLink,
                 nodeIdx: null,
                 signalIdx: null,
                 obj: null
             });
-            graph.links.push({source: messageLink, target:globalIdx})
+            graph.links.push({source: messageLink, target:globalIdx, length: 400})
         })
     });
 

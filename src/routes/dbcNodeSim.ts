@@ -2,7 +2,8 @@ import * as  d3 from 'd3';
 import type { Graph } from './types';
 import _ from 'lodash'
 import type { init } from 'svelte/internal';
-import mySvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/network-tree-svgrepo-com.svg'
+import networkSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/network-tree-svgrepo-com.svg'
+import messageSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/message-svgrepo-com.png'
 
 type SimulationCallback = (event: any) => void;
 
@@ -19,6 +20,8 @@ class Simulation {
         maxZoom: 7,
         chargeStrength: -300,
         centeringStrength: 0.1,
+        baseRadius: 20,
+        linkLength: 200
     };
 
     // Class properties
@@ -26,7 +29,7 @@ class Simulation {
     forceSimulation: any;
     mainContainer: any;
     zoom: any;
-    node: any
+    node: any;
 
     circles: any;
 
@@ -49,7 +52,7 @@ class Simulation {
     init() {
         this.createMainContainer();
         this.createForceSimulation();
-        console.log(mySvg)
+        console.log(messageSvg)
     }
 
     createForceSimulation() {
@@ -64,11 +67,11 @@ class Simulation {
                 .force('collision', d3.forceCollide()
                     .radius((d:any) => d.radius))
                 .force('link', d3.forceLink()
-                    .links(this.graph.links))
+                    .links(this.graph.links).distance(this.settings.linkLength))
                 .on('tick', this.simulationRunningCallback);
     }
 
-    updateNodes = () => {
+    updateNodes2 = () => {
         let group = this.mainContainer
             .selectAll("g")
             .attr("transform", function(d: any) {
@@ -87,26 +90,44 @@ class Simulation {
         let circle = group.append("circle")
             .attr("r", (d:any) => d.radius)
         
-        /*
-        <svg width="48px" height="48px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" fill="white" fill-opacity="0.01"/>
-        <rect x="4" y="34" width="8" height="8" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="8" y="6" width="32" height="12" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M24 34V18" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M8 34V26H40V34" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="36" y="34" width="8" height="8" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="20" y="34" width="8" height="8" fill="#2F88FF" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M14 12H16" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        */
-        //group.append('rect').attr('width',48).attr('height',48).attr('fill','white').attr('fill-opacity',0.01)
-        //group.append('rect').attr('x',4).attr('y',34).attr('width',8).attr('height',8).attr('fill','#2F88FF').attr('stroke', 'black').attr('stroke-width', 4).attr('stroke-linecap','round').attr('stroke-linejoin','round')
-        //group.append("img").attr("src",'https://www.svgrepo.com/show/213625/handcuffs.svg')
-        
-        //group.append('text').text((d: any)=>d.name).attr('dy',20)
+        group.call(this.drag(this.forceSimulation));
+    };
+
+    updateNodes = () => {
+
+        let group = this.mainContainer
+            .selectAll("g")
+            .attr("transform", function(d: any) {
+                return "translate(" + d.x + "," + d.y + ")";
+            })
+            .data(this.graph.nodes)
+            .enter().append("g")
+            .on("dblclick", (d:any) => {this.onClickCallback(d.target.id)})
+            .on("click", (event:any, d:any) => {
+                d.fx = null;
+                d.fy = null;})
             //.on("mouseover", (d) => {
             //  console.log(`Moused over node ${d.target.id}`)
             //})
+
+        let circle = group.append("circle")
+            .attr("r", (d:any) => this.settings.baseRadius + d.radius)
+            .attr('fill', '#fff')
+            .attr('stroke', '#000');
+        
+        let image = group.append('image')
+            .attr('x','-15px')
+            .attr('y','-16px')
+            .attr('height','30px')
+            .attr('width','30px')
+            .attr('xlink:href', (d:any)=>{
+                if (d.type === 'message') {
+                    return messageSvg
+                } else if (d.type === 'signal') {
+                    return networkSvg
+                }
+            })
+        
         group.call(this.drag(this.forceSimulation));
     };
     
@@ -120,6 +141,16 @@ class Simulation {
             .attr('x2', (d:any) => d.target.x)
             .attr('y2', (d:any) => d.target.y)
             .attr('style','stroke: #ccc;')
+            
+        u.append('text')
+            .attr('class', 'text')
+            .attr('fill', '#000000')
+            .attr('font-size', '8px')
+            .attr('pointer-events', 'none')
+            .attr('text-anchor', 'middle')
+            .text(function(d: any) {
+                return 'test';
+            });
     }
 
     simulationRunningCallback = () => {

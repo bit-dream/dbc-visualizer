@@ -20,7 +20,7 @@ class Simulation {
         minZoom: 0.1,
         maxZoom: 7,
         chargeStrength: -500,
-        centeringStrength: 0.01,
+        centeringStrength: 0.07,
         baseRadius: 20,
         linkLength: 200
     };
@@ -238,12 +238,20 @@ class Simulation {
                 d3.select(this.selector).html("");
                 this.setWidth = document.innerWidth;
                 this.setHeight = document.innerHeight;
-                this.createMainContainer();
-                this.updateLinks();
-                this.updateNodes();
-                this.forceSimulation.restart();
-            }, 10)
+                this.simulationRestart();
+            }, 100)
         );
+    }
+
+    simulationRestart() {
+        this.forceSimulation.stop();
+        d3.select(this.selector).html("");
+        this.createMainContainer();
+        this.createLinks();
+        this.createNodes();
+        this.updateLinks();
+        this.updateNodes();
+        this.forceSimulation.restart();
     }
 
     rotation(source: any, target: any) {

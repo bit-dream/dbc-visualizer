@@ -26,13 +26,14 @@ const nodeClickHandler = (e: any) => {
 /** @type {import('./$types').PageData} */  export let data: DbcData;
 let graph = createGraph(data);
 console.log(graph)
-const sim = new Simulation('#test', graph);
+const selector = '#test'
+const sim = new Simulation(selector, graph);
 onMount(() => {
 
     sim.setWidth = window.innerWidth;
     sim.setHeight = window.innerHeight;
     sim.init();
-    sim.documentResizeHandler(document);
+    sim.documentResizeHandler(window);
 })
 
 

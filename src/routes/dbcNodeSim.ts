@@ -6,7 +6,7 @@ import networkSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/ne
 import messageSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/mail-svgrepo-com.svg'
 import signalSvg from '/Users/headquarters/Documents/Code/dbc-visualizer/src/letter-s-svgrepo-com.svg'
 
-type SimulationCallback = (event: any) => void;
+type SimulationCallback = (event: any, data: any) => void;
 
 class Simulation {
 
@@ -84,7 +84,7 @@ class Simulation {
             })
             .data(this.graph.nodes)
             .enter().append("g")
-            .on("dblclick", (d:any) => {this.onClickCallback(d.target.id)})
+            .on("dblclick", (event: any, d:any) => {this.onClickCallback(event,d)})
             .on("click", (event:any, d:any) => {
                 d.fx = null;
                 d.fy = null;})
@@ -195,7 +195,7 @@ class Simulation {
                 .style('left', '0')
                 .call(d3.zoom().on("zoom", (event: any, d: any) => {
                     this.mainContainer.attr("transform", event.transform);
-                  }))
+                  })).on("dblclick.zoom", null)
                 .append("g");
     }
 

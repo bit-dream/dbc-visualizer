@@ -1,7 +1,7 @@
 <script type="ts">
 import { onMount } from 'svelte';
 import Simulation from './dbcNodeSim';
-import {createGraph} from './transforms';
+import createGraph from './transforms';
 import _ from 'lodash'
 import type { DbcData } from 'dbc-can/lib/dbc/types';
 
@@ -25,6 +25,7 @@ const nodeClickHandler = (e: any) => {
 
 /** @type {import('./$types').PageData} */  export let data: DbcData;
 let graph = createGraph(data);
+console.log(graph)
 const sim = new Simulation('#test', graph);
 onMount(() => {
 

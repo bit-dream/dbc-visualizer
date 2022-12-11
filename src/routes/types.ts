@@ -40,6 +40,7 @@ export type GraphLinkProps = {
 }
 
 export type GraphNodeProps = {
+    id: string;
     name: string;
     radius: number;
     obj: Message | Signal | Attributes | null;

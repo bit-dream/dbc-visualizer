@@ -1,25 +1,28 @@
-import type { DbcData, Attributes, Message, Signal } from "dbc-can/lib/dbc/types";
-import type { Graph, GraphLinkProps, GraphNodeProps } from './types'
+import type { DbcData, Message, Signal } from "dbc-can/lib/dbc/types";
+import type { Graph, GraphLinkProps, GraphNodeProps } from './types';
 
-export const createGraph = (data: DbcData) => {
+const createGraph = (data: DbcData) => {
 
     let graph: Graph = {
         nodes: new Array(), 
         links: new Array()
     };
 
-    const networkName = 'network'
+    const networkName = 'CAN Network';
 
     graph.nodes.push({
+        id: networkName,
         name: networkName,
         radius: 5,
         obj: null,
-        type: networkName
+        type: 'network'
     });
 
     // Append all messages as nodes
     data.messages.forEach((message: Message) => {
+        const messageName = message.name + crypto.randomUUID();
         graph.nodes.push({
+            id: messageName,
             name: message.name,
             radius: message.dlc,
             obj: message,
@@ -29,12 +32,14 @@ export const createGraph = (data: DbcData) => {
         // Create link from message to network
         graph.links.push({
             source: networkName,
-            target: message.name
+            target: messageName
         })
 
         // Append all signals as nodes
         message.signals.forEach((signal: Signal) => {
+            const signalName = signal.name + crypto.randomUUID();
             graph.nodes.push({
+                id: signalName,
                 name: signal.name,
                 radius: signal.length,
                 obj: signal,
@@ -43,8 +48,8 @@ export const createGraph = (data: DbcData) => {
 
             // Create link from message to signal
             graph.links.push({
-                source: message.name,
-                target: signal.name
+                source: messageName,
+                target: signalName
             })
         })
     })
@@ -52,12 +57,12 @@ export const createGraph = (data: DbcData) => {
     graph.links = graph.links.map((link: GraphLinkProps, linkIdx: number) => {
         let sources: number[] = []; let targets: number[] = [];
         graph.nodes.forEach((node: GraphNodeProps, nodeIdx: number) => {
-            if (node.name === link.source) {
+            if (node.id === link.source) {
                 sources.push(nodeIdx);
             }
         })
         graph.nodes.forEach((node: GraphNodeProps, nodeIdx: number) => {
-            if (node.name === link.target) {
+            if (node.id === link.target) {
                 targets.push(nodeIdx);
             }
         })
@@ -80,3 +85,5 @@ export const createGraph = (data: DbcData) => {
     */
    return graph;
 }
+
+export default createGraph;

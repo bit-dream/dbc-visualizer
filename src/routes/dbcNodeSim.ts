@@ -32,7 +32,9 @@ class Simulation {
     zoom: any;
     node: any;
 
-    circles: any;
+    links: any;
+    nodes: any;
+    texts: any;
 
     constructor(selector: string, graph: Graph, callback=(d: any)=>{}) {
         this.selector = selector;
@@ -52,8 +54,9 @@ class Simulation {
 
     init() {
         this.createMainContainer();
+        this.createLinks();
+        this.createNodes();
         this.createForceSimulation();
-        console.log(messageSvg)
     }
 
     createForceSimulation() {
@@ -74,7 +77,7 @@ class Simulation {
 
     updateNodes = () => {
 
-        let group = this.mainContainer
+        let group = this.nodes
             .selectAll("g")
             .attr("transform", function(d: any) {
                 return "translate(" + d.x + "," + d.y + ")";
@@ -111,8 +114,18 @@ class Simulation {
 
         let text = group.append('text')
             .attr('text-anchor', 'middle')
-            .attr('y', '45px')
+            .attr('y', (d:any)=>{
+                if (d.type === 'message') {
+                    return '45px'
+                } else if (d.type === 'signal') {
+                    return '30px'
+                } else if (d.type === 'network') {
+                    return '55px'
+                }
+            })
             .text((d:any)=> (d.type === 'message' || d.type === 'network' || d.type === 'signal') ? d.name : '')
+            .attr('font-size', (d: any) => {if (d.type === 'signal') return "0.6em"})
+            .attr('font-weight', (d: any) => {if(d.type !== 'signal') return "bold"})
         
         group.call(this.drag(this.forceSimulation));
     };
@@ -128,30 +141,35 @@ class Simulation {
     }
     
     updateLinks = () => {
-        let u = this.mainContainer
+
+        let u = this.links
             .selectAll('line')
             .data(this.graph.links)
             .join('line')
-            .attr('class','line')
             .attr('x1', (d:any) => d.source.x)
             .attr('y1', (d:any) => d.source.y)
             .attr('x2', (d:any) => d.target.x)
             .attr('y2', (d:any) => d.target.y)
             .attr('style','stroke: #ccc;')
-
-        this.getRootSvg().selectAll(".line")
-            .data(this.graph.links)
-            .enter().append("text")
-            .attr("class","labelText")
-            .attr("dx",20)
-            .attr("dy",0)
-            .style("fill","red")
-            .append("textPath")
-            .text('hello');
-    
     }
 
+    createNodes() {
+        this.nodes = this.mainContainer
+            .append('g')
+            .attr('class', 'nodes');
+    }
 
+    createLinks() {
+        this.links = this.mainContainer
+            .append('g')
+            .attr('class', 'relationships');
+    }
+
+    createLinkTexts() {
+        this.texts = this.mainContainer
+            .append('g')
+            .attr('class', 'texts')
+    }
 
     simulationRunningCallback = () => {
         this.updateLinks();
@@ -226,6 +244,40 @@ class Simulation {
                 this.forceSimulation.restart();
             }, 10)
         );
+    }
+
+    rotation(source: any, target: any) {
+        return Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
+    }
+
+    unitaryNormalVector(source: any, target: any, newLength: any | null) {
+        var center = { x: 0, y: 0 },
+            vector = this.unitaryVector(source, target, newLength);
+
+        return this.rotatePoint(center, vector, 90);
+    }
+
+    unitaryVector(source: any, target: any, newLength: any | null) {
+        var length = Math.sqrt(Math.pow(target.x - source.x, 2) + Math.pow(target.y - source.y, 2)) / Math.sqrt(newLength || 1);
+
+        return {
+            x: (target.x - source.x) / length,
+            y: (target.y - source.y) / length,
+        };
+    }
+
+    rotatePoint(c:any, p: any, angle: any) {
+        return this.rotate(c.x, c.y, p.x, p.y, angle);
+    }
+
+    rotate(cx: any, cy: any, x: any, y: any, angle: any) {
+        var radians = (Math.PI / 180) * angle,
+            cos = Math.cos(radians),
+            sin = Math.sin(radians),
+            nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+            ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+
+        return { x: nx, y: ny };
     }
     
 }

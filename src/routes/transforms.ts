@@ -15,7 +15,8 @@ const createGraph = (data: DbcData) => {
         name: networkName,
         radius: 5,
         obj: null,
-        type: 'network'
+        type: 'network',
+        image: '/images/network-tree-svgrepo-com.svg'
     });
 
     // Append all messages as nodes
@@ -26,7 +27,8 @@ const createGraph = (data: DbcData) => {
             name: message.name,
             radius: message.dlc,
             obj: message,
-            type: 'message'
+            type: 'message',
+            image: '/images/mail-svgrepo-com.svg'
         });
 
         // Create link from message to network
@@ -43,7 +45,8 @@ const createGraph = (data: DbcData) => {
                 name: signal.name,
                 radius: signal.length,
                 obj: signal,
-                type: 'signal'
+                type: 'signal',
+                image: '/images/letter-s-svgrepo-com.svg'
             })
 
             // Create link from message to signal
@@ -72,17 +75,6 @@ const createGraph = (data: DbcData) => {
         }
     })
 
-    /*
-    graph.links = graph.links.map(function(l) {
-        var sourceNode = graph.nodes.filter(n => {return n.name === l.source;})[0],
-            targetNode = graph.nodes.filter(n => {return n.name === l.target;})[0];
-    
-        return {
-            source: sourceNode,
-            target: targetNode
-        };
-    });
-    */
    return graph;
 }
 

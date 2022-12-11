@@ -1,6 +1,6 @@
 <script type="ts">
 import { onMount } from 'svelte';
-import Simulation from './dbcNodeSim';
+import Simulation from './simulation';
 import createGraph from './transforms';
 import _ from 'lodash'
 import type { DbcData } from 'dbc-can/lib/dbc/types';
@@ -12,7 +12,7 @@ import Button, {Label} from '@smui/button';
 let open = false;
 let dialogTitle = '';
 let dialogDescription = '';
-const nodeClickHandler = (e: any, d: any) => {
+const nodeDoubleClickHandler = (e: any, d: any) => {
     console.log(e,d)
     dialogTitle = d.name;
     if (d.obj.description) {
@@ -37,7 +37,7 @@ function closeHandler(e: CustomEvent<{ action: string }>) {
 let graph = createGraph(data);
 console.log(graph)
 const selector = '#test'
-const sim = new Simulation(selector, graph, nodeClickHandler);
+const sim = new Simulation(selector, graph, nodeDoubleClickHandler);
 onMount(() => {
 
     sim.setWidth = window.innerWidth;

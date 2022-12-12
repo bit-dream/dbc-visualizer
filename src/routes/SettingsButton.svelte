@@ -1,26 +1,41 @@
 <script type='ts'>
-
+    import Fab, { Icon } from '@smui/fab';
+    import Dialog, { Title, Content, Actions } from '@smui/dialog';
+    import Button, {Label} from '@smui/button';
+    import Slider from '@smui/slider';
+    import Switch from '@smui/switch';
+    import FormField from '@smui/form-field';
+    import type Simulation from './simulation';
+	  import type { GraphLinkProps, GraphNodeProps } from './types';
+	  import { onMount } from 'svelte';
     type Settings = {
-      simulation: any;
+      simulation: Simulation;
       minZoom: number;
       maxZoom: number;
       chargeStrength: number;
       centeringStrength: number;
       linkLength: number;
     }
-
     export let settings: Settings;
 
-    import Fab, { Icon } from '@smui/fab';
-    import Dialog, { Title, Content, Actions } from '@smui/dialog';
-    import Button, {Label} from '@smui/button';
-    import Slider from '@smui/slider';
+    let memGraph = settings.simulation.graph;
+    onMount(() => {memGraph = settings.simulation.graph;})
     
-    let open = false;
+    let open = false; let checked = true;
     function dialogHandler(e: CustomEvent<{ action: string }>) {
       switch (e.detail.action) {
         case 'close':
           open = false;
+          if (!checked) {
+            let graph = settings.simulation.graph;
+            let newNodes = graph.nodes.filter((node: GraphNodeProps)=>{
+              return node.type !== 'signal';
+            });
+            graph.nodes = newNodes;
+            settings.simulation.graph = graph;
+          } else {
+            settings.simulation.graph = memGraph;
+          }
           settings.simulation.settings.chargeStrength = settings.chargeStrength;
           settings.simulation.settings.linkLength = settings.linkLength;
           settings.simulation.simulationRestart();
@@ -88,6 +103,13 @@
       input$aria-label="Discrete slider"
     />
     <pre class="status">Value: {settings.linkLength}</pre>
+    <div>
+      <FormField>
+        <Switch bind:checked />
+        <span slot="label">Display Signals</span>
+      </FormField>
+    </div>
+    <pre class="status">Having this not selected can significantly increase performance for larger files</pre>
   </Content>
   <Actions>
     <Button action="close">

@@ -1,33 +1,24 @@
 <script type="ts">
-	import Dialog from "@smui/dialog";
 	import type { DbcData } from "dbc-can/lib/dbc/types";
 	import { onMount } from "svelte";
 	import SettingsButton from "./SettingsButton.svelte";
 	import Simulation from "./simulation";
 	import createGraph from "./transforms";
-  import { Title, Content, Actions } from '@smui/dialog';
-  import Button, {Label} from '@smui/button';
+	import DbcDialog from "./DbcDialog.svelte";
 
   /* Component props */
   export let data: DbcData;
 
-  function dialogHandler(e: CustomEvent<{ action: string }>) {
-    switch (e.detail.action) {
-      case 'close':
-        open = false;
-        break;
-    }
-  }
-
   const selector = 'DBC_SIMULATION';
-
-  let open = false; let dialogTitle = '';
+  let openDialogBox = false; let node: any = {type: null};
   const nodeDoubleClickHandler = (e: any, d: any) => {
-      dialogTitle = d.name;
-      open = true;
+      openDialogBox = true;
+      if (d) {
+        node = d;
+      }
   }
   const nodeHoverHandler = (e: any, d: any) => {
-      console.log(e,d);
+      
   }
 
   let graph = createGraph(data);
@@ -58,21 +49,7 @@
     }}
 />
 
-<Dialog
-  bind:open
-  scrimClickAction=""
-  escapeKeyAction=""
-  aria-labelledby="large-scroll-title"
-  aria-describedby="large-scroll-content"
-  surface$style="width: 850px; max-width: calc(100vw - 32px);"
-  on:SMUIDialog:closed={dialogHandler}
->
-  <Title id="large-scroll-title">{dialogTitle}</Title>
-  <Content id="large-scroll-content">
-  </Content>
-  <Actions>
-    <Button action="close">
-      <Label>Done</Label>
-    </Button>
-  </Actions>
-</Dialog>
+<DbcDialog 
+    bind:open={openDialogBox}
+    node={node}
+/>

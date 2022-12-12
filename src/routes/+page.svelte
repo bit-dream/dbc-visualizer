@@ -14,8 +14,5 @@
 
 </script>
 
-<DbcSimulation 
-    selector={'DBC_SIMULATION'}
-    data={data}
-/>
+<DbcSimulation data={data}/>
 <GettingStarted/>

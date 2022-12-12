@@ -8,6 +8,9 @@
   import { Title, Content, Actions } from '@smui/dialog';
   import Button, {Label} from '@smui/button';
 
+  /* Component props */
+  export let data: DbcData;
+
   function dialogHandler(e: CustomEvent<{ action: string }>) {
     switch (e.detail.action) {
       case 'close':
@@ -16,8 +19,7 @@
     }
   }
 
-  export let selector: string;
-  export let data: DbcData;
+  const selector = 'DBC_SIMULATION';
 
   let open = false; let dialogTitle = '';
   const nodeDoubleClickHandler = (e: any, d: any) => {

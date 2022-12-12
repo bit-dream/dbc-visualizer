@@ -6,7 +6,8 @@ import _ from 'lodash'
 import type { DbcData } from 'dbc-can/lib/dbc/types';
 import Dialog, { Title, Content, Actions } from '@smui/dialog';
 import Button, {Label} from '@smui/button';
-
+import SettingsButton from './SettingsButton.svelte';
+ 
 let isStartup = true;
 let open: boolean = true;
 let dialogTitle = 'Getting Started';
@@ -27,7 +28,10 @@ const nodeDoubleClickHandler = (e: any, d: any) => {
     dialogTitle = d.name;
     open = true;
 }
-const sim = new Simulation('#DBC_SIMULATION', graph, nodeDoubleClickHandler);
+const nodeHoverHandler = (e: any, d: any) => {
+    console.log(e,d);
+}
+const sim = new Simulation('#DBC_SIMULATION', graph, nodeDoubleClickHandler, nodeHoverHandler);
 onMount(() => {
 
     sim.setWidth = window.innerWidth;
@@ -87,3 +91,15 @@ onMount(() => {
     </Button>
   </Actions>
 </Dialog>
+
+<SettingsButton 
+    settings={{
+        simulation: sim,
+        minZoom: sim.settings.minZoom,
+        maxZoom: sim.settings.maxZoom,
+        chargeStrength: sim.settings.chargeStrength,
+        centeringStrength: sim.settings.centeringStrength,
+        linkLength: sim.settings.linkLength
+    }}
+/>
+

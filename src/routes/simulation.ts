@@ -246,6 +246,7 @@ class Simulation {
         this.createNodes();
         this.updateLinks();
         this.updateNodes();
+        this.createForceSimulation();
         this.forceSimulation.restart();
     }
 

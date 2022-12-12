@@ -41,7 +41,7 @@ class Simulation {
         callback: SimulationCallback=(event: any, data: any)=>{}, 
         hoverCallback: SimulationCallback=(event: any, data: any)=>{}
         ) {
-        this.selector = selector;
+        this.selector = '#' + selector;
         this.graph = graph;
         this.width = 1000;
         this.height = 700;

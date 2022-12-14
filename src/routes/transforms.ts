@@ -1,4 +1,4 @@
-import type { DbcData, Message, Signal } from "dbc-can/lib/dbc/types";
+import type { DbcData, Message, Signal, Node } from "dbc-can/lib/dbc/types";
 import type { Graph, GraphLinkProps, GraphNodeProps } from './types';
 
 const createGraph = (data: DbcData) => {
@@ -19,6 +19,23 @@ const createGraph = (data: DbcData) => {
         image: '/images/network-tree-svgrepo-com.svg'
     });
 
+    data.nodes.forEach((node: Node) => {
+        const nodeName = node.name + crypto.randomUUID();
+        graph.nodes.push({
+            id: nodeName,
+            name: node.name,
+            radius: 30,
+            obj: node,
+            type: 'node',
+            image: '/images/cpu-svgrepo-com.svg'
+        });
+        // Create link from message to network
+        graph.links.push({
+            source: networkName,
+            target: nodeName
+        })
+    })
+
     // Append all messages as nodes
     data.messages.forEach((message: Message) => {
         const messageName = message.name + crypto.randomUUID();
@@ -30,12 +47,27 @@ const createGraph = (data: DbcData) => {
             type: 'message',
             image: '/images/mail-svgrepo-com.svg'
         });
+        
+        let messageNode;
+        if (message.sendingNode) {
+            messageNode = graph.nodes.filter((node: GraphNodeProps) => {
+                return node.name === message.sendingNode
+            })
+            // Create link from message to node
+            if (messageNode[0]) {
+                graph.links.push({
+                    source: messageNode[0].id,
+                    target: messageName
+                })
+            }
+        } else {
+            // Create link from message to network
+            graph.links.push({
+                source: networkName,
+                target: messageName
+            })
+        }
 
-        // Create link from message to network
-        graph.links.push({
-            source: networkName,
-            target: messageName
-        })
 
         // Append all signals as nodes
         message.signals.forEach((signal: Signal) => {
@@ -54,6 +86,24 @@ const createGraph = (data: DbcData) => {
                 source: messageName,
                 target: signalName
             })
+
+            // Create any links with receiving nodes
+            if (signal.receivingNodes) {
+                let signalNodes;
+                signal.receivingNodes.forEach((signalNode: string) =>{
+                    let filteredNode = graph.nodes.filter((graphNode: GraphNodeProps) => {
+                        return graphNode.name === signalNode
+                    })
+                    // Create link from message to node
+                    if (filteredNode[0]) {
+                        graph.links.push({
+                            source: signalName,
+                            target: filteredNode[0].id
+                    })
+                }
+                })
+            }
+
         })
     })
 

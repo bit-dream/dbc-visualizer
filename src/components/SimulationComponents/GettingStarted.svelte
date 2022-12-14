@@ -3,7 +3,7 @@
     import Button, {Label} from '@smui/button';
 
     let open: boolean = true;
-    let dialogTitle = 'Getting Started';
+    let dialogTitle = `👋🏼 Hello! Let's Get Started. Here are a few things to know:`;
     function dialogHandler(e: CustomEvent<{ action: string }>) {
         switch (e.detail.action) {
         case 'close':
@@ -53,7 +53,10 @@
     </ul>
   </Content>
   <Actions>
-    <Button action="close">
+    <Button action="close" secondary variant='outlined'>
+        <Label>Don't show me this again</Label>
+      </Button>
+    <Button action="close" variant='raised'>
       <Label>Done</Label>
     </Button>
   </Actions>

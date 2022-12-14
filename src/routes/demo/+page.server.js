@@ -1,9 +1,9 @@
 // @ts-nocheck
-/** @type {import('./$types').PageLoad} */
+/** @type {import('../$types').PageLoad} */
 import Dbc from 'dbc-can';
 export function load({ params }) {
     const dbc = new Dbc();
-    const data = dbc.loadSync('static/DBC_template.dbc');
+    const data = dbc.loadSync('static/SimpleDBC.dbc');
     console.log(data)
     return data
 }

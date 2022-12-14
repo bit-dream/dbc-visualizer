@@ -1,5 +1,5 @@
 import type { DbcData, Message, Signal, Node } from "dbc-can/lib/dbc/types";
-import type { Graph, GraphLinkProps, GraphNodeProps } from './types';
+import type { Graph, GraphLinkProps, GraphNodeProps } from '../types';
 
 const createGraph = (data: DbcData) => {
 
@@ -57,6 +57,12 @@ const createGraph = (data: DbcData) => {
             if (messageNode[0]) {
                 graph.links.push({
                     source: messageNode[0].id,
+                    target: messageName
+                })
+            } else {
+                // Create link from message to network
+                graph.links.push({
+                    source: networkName,
                     target: messageName
                 })
             }

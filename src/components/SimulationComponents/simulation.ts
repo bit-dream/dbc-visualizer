@@ -116,9 +116,11 @@ class Simulation {
                     return '30px'
                 } else if (d.type === 'network') {
                     return '55px'
+                } else if (d.type === 'node') {
+                    return '55px'
                 }
             })
-            .text((d:any)=> (d.type === 'message' || d.type === 'network' || d.type === 'signal') ? d.name : '')
+            .text((d:any)=> (d.type === 'message' || d.type === 'network' || d.type === 'signal' || d.type === 'node') ? d.name : '')
             .attr('font-size', (d: any) => {if (d.type === 'signal') return "0.6em"})
             .attr('font-weight', (d: any) => {if(d.type !== 'signal') return "bold"})
         

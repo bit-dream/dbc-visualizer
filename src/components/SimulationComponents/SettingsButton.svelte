@@ -6,7 +6,7 @@
     import Switch from '@smui/switch';
     import FormField from '@smui/form-field';
     import type Simulation from './simulation';
-	  import type { GraphLinkProps, GraphNodeProps } from './types';
+	  import type { GraphLinkProps, GraphNodeProps } from '../../routes/types';
 	  import { onMount } from 'svelte';
     type Settings = {
       simulation: Simulation;

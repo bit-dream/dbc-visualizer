@@ -1,5 +1,5 @@
 import type { DbcData, Message, Signal, Node } from "dbc-can/lib/dbc/types";
-import type { Graph, GraphLinkProps, GraphNodeProps } from '../types';
+import type { Graph, GraphLinkProps, GraphNodeProps } from '../../routes/types';
 
 const createGraph = (data: DbcData) => {
 

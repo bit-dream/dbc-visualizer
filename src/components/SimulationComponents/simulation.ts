@@ -1,5 +1,5 @@
 import * as  d3 from 'd3';
-import type { Graph } from './types';
+import type { Graph } from '../../routes/types';
 import _ from 'lodash'
 
 export type SimulationCallback = (event: any, data: any) => void;
